@@ -58,7 +58,7 @@ var ribbon = {
         { label: "乾", insert: "乾 名 值" },
         { label: "坤", insert: "坤 名 值" },
         { label: "革", insert: "革 名 值" },
-        { label: "大有", insert: "大有 []" }
+        { label: "大有", insert: '大有 "文本"' }
       ]
     },
     {

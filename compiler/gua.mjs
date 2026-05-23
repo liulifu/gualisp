@@ -415,6 +415,7 @@ function resolveMeaning(op, state) {
 function compileCall(parts, state) {
   const [op, ...args] = parts;
   if (!op) throw new Error("空表达式");
+  if (parts.length === 1) return compileExpr(op, state);
 
   if (op === "大有") {
     if (args.length < 1) throw new Error("大有 至少需要一个参数");
