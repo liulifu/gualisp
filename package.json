@@ -1,0 +1,15 @@
+{
+  "name": "gualisp",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "gua": "./bin/gua.mjs"
+  },
+  "scripts": {
+    "gua": "bun ./bin/gua.mjs",
+    "build:example": "bun ./bin/gua.mjs build examples/jiuzhang.gua -o dist/jiuzhang.ts",
+    "run:example": "bun dist/jiuzhang.ts",
+    "build:lianshan": "bun ./bin/gua.mjs build examples/lianshan.gua -o dist/lianshan.ts",
+    "run:lianshan": "bun dist/lianshan.ts"
+  }
+}
