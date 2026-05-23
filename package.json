@@ -12,6 +12,8 @@
     "build:lianshan": "bun ./bin/gua.mjs build examples/lianshan.gua -o dist/lianshan.ts",
     "run:lianshan": "bun dist/lianshan.ts",
     "build:kuaiji": "bun ./bin/gua.mjs build examples/kuaiji.gua -o dist/kuaiji.ts",
-    "run:kuaiji": "bun dist/kuaiji.ts"
+    "run:kuaiji": "bun dist/kuaiji.ts",
+    "build:web": "bun build src/app.ts --outfile public/app.js",
+    "web": "bun run build:web && bun src/server.ts"
   }
 }

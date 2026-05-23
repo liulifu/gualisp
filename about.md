@@ -973,6 +973,38 @@ bun bin/gua.mjs build examples/jiuzhang.gua -o dist/jiuzhang.ts
 
 如果不指定 `-o`，默认输出到 `dist/<文件名>.ts`。
 
+### Web 编辑器
+
+MVP 提供一个本地 Web 编辑器，技术栈为 Bun + TypeScript。
+
+启动：
+
+```bash
+.\web.cmd
+```
+
+或：
+
+```bash
+bun run web
+```
+
+访问：
+
+```txt
+http://localhost:4173
+```
+
+编辑器设计方向：
+
+- 表格式源码编辑，参考易语言一类表格化编辑体验
+- 顶部提供类似 Word Ribbon 的关键词工具栏
+- 点击工具栏可以插入 `入`、`鼎`、`观`、`九章`、`连山` 等常用词
+- 支持编译为 TypeScript
+- 支持直接运行并查看输出
+
+它的目标不是替代专业 IDE，而是帮助新手适应卦LISP 的中文关键字和取象系统。
+
 ### 入局
 
 ```gua

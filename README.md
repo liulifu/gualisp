@@ -24,4 +24,24 @@ bun dist/lianshan.ts
 - `九章外`：现代计算补充
 - `连山`：数据结构
 
+## Web 编辑器
+
+```bash
+.\web.cmd
+```
+
+或：
+
+```bash
+bun run web
+```
+
+启动后访问：
+
+```txt
+http://localhost:4173
+```
+
+编辑器提供表格式源码编辑、关键词工具栏、编译预览和运行输出。
+
 详细设定见 [about.md](about.md)。
