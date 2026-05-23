@@ -259,6 +259,7 @@ let rows = [""];
 let activeRow = 0;
 let activeTab: TabName = "常用";
 let shouldAutoRun = false;
+let tsScrollTarget = 0;
 
 function initFromUrl() {
   const params = new URLSearchParams(window.location.search);
@@ -267,6 +268,7 @@ function initFromUrl() {
   if (sample && sample in samples) rows = samples[sample].split("\n");
   if (tab && tab in ribbon) activeTab = tab;
   shouldAutoRun = params.get("run") === "1";
+  tsScrollTarget = Number(params.get("tsScroll") ?? 0);
 }
 
 const app = document.querySelector<HTMLDivElement>("#app");
@@ -534,6 +536,7 @@ async function runSource() {
   if (result.ok) {
     tsOut.textContent = result.ts ?? "";
     runOut.textContent = result.output ?? "";
+    if (tsScrollTarget > 0) tsOut.scrollTop = tsScrollTarget;
     setMessage("运行完成");
   } else {
     runOut.textContent = result.error ?? "运行失败";

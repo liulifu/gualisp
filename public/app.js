@@ -244,6 +244,7 @@ var rows = [""];
 var activeRow = 0;
 var activeTab = "常用";
 var shouldAutoRun = false;
+var tsScrollTarget = 0;
 function initFromUrl() {
   const params = new URLSearchParams(window.location.search);
   const sample = params.get("sample");
@@ -254,6 +255,7 @@ function initFromUrl() {
   if (tab && tab in ribbon)
     activeTab = tab;
   shouldAutoRun = params.get("run") === "1";
+  tsScrollTarget = Number(params.get("tsScroll") ?? 0);
 }
 var app = document.querySelector("#app");
 if (!app)
@@ -495,6 +497,8 @@ async function runSource() {
   if (result.ok) {
     tsOut.textContent = result.ts ?? "";
     runOut.textContent = result.output ?? "";
+    if (tsScrollTarget > 0)
+      tsOut.scrollTop = tsScrollTarget;
     setMessage("运行完成");
   } else {
     runOut.textContent = result.error ?? "运行失败";

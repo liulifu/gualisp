@@ -69,7 +69,7 @@ http://localhost:4173
 启动 Web 编辑器后，可用 Chrome headless 更新 README 截图：
 
 ```bash
-"C:\Program Files\Google\Chrome\Application\chrome.exe" --headless=new --disable-gpu --hide-scrollbars --window-size=1429,880 --virtual-time-budget=4000 --screenshot="docs\gualisp-editor.png" "http://localhost:4173/?sample=%E4%B9%9D%E7%AB%A0&tab=%E8%BF%9E%E5%B1%B1&run=1"
+"C:\Program Files\Google\Chrome\Application\chrome.exe" --headless=new --disable-gpu --hide-scrollbars --window-size=1425,929 --virtual-time-budget=4500 --screenshot="docs\gualisp-editor.png" "http://localhost:4173/?sample=%E4%B9%9D%E7%AB%A0&tab=%E8%BF%9E%E5%B1%B1&run=1&tsScroll=1050"
 ```
 
 详细设定见 [about.md](about.md)。
