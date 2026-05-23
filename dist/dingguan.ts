@@ -178,16 +178,16 @@ function __连山出队(队) {
 
 // 入 九章: 入九章之局
 // 入 连山: 入连山之局
-function 求和(a, b) {
-  return (a + b);
+function 总价(单价, 数量) {
+  return (单价 * 数量);
 }
-function 三数和(xs) {
+function 前三合(xs) {
   return (__连山取(xs, 0) + __连山取(xs, 1) + __连山取(xs, 2));
 }
 const 年龄 = 18;
 const 数列 = __连山列(2, 4, 6);
-console.log(求和(3, 5));
-console.log(三数和(数列));
+console.log(总价(3, 5));
+console.log(前三合(数列));
 if ((年龄 > 18)) {
   console.log("已成年");
 } else if ((年龄 === 18)) {
