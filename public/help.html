@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>卦LISP 帮助</title>
+    <style>
+      :root {
+        --ink: #202124;
+        --muted: #5f6368;
+        --line: #d0d7de;
+        --soft: #f6f8fa;
+        --accent: #8a1f17;
+        --code: #24292f;
+        --mono: "Cascadia Code", "Microsoft YaHei UI", Consolas, monospace;
+        --ui: "Microsoft YaHei UI", "Segoe UI", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: #fff;
+        font-family: var(--ui);
+        line-height: 1.65;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 260px minmax(0, 1fr);
+        min-height: 100vh;
+      }
+
+      aside {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        padding: 24px 18px;
+        background: var(--soft);
+        border-right: 1px solid var(--line);
+        overflow: auto;
+      }
+
+      main {
+        max-width: 980px;
+        padding: 34px 44px 80px;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 32px;
+      }
+
+      h2 {
+        margin-top: 38px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--line);
+        font-size: 24px;
+      }
+
+      h3 {
+        margin-top: 26px;
+        font-size: 18px;
+      }
+
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      nav a {
+        display: block;
+        padding: 5px 0;
+        color: #38424d;
+      }
+
+      .brand {
+        color: var(--accent);
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 14px;
+      }
+
+      .lead {
+        color: var(--muted);
+        font-size: 16px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 14px 0 22px;
+        font-size: 14px;
+      }
+
+      th,
+      td {
+        border: 1px solid var(--line);
+        padding: 8px 10px;
+        vertical-align: top;
+      }
+
+      th {
+        background: var(--soft);
+        text-align: left;
+      }
+
+      code,
+      pre {
+        font-family: var(--mono);
+      }
+
+      code {
+        background: #eef1f5;
+        border-radius: 3px;
+        padding: 1px 4px;
+      }
+
+      pre {
+        overflow: auto;
+        padding: 14px;
+        color: var(--code);
+        background: #f6f8fa;
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        line-height: 1.55;
+      }
+
+      .pair {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+
+      .note {
+        padding: 12px 14px;
+        background: #fff8e1;
+        border: 1px solid #f0d98c;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <aside>
+        <div class="brand">卦LISP 帮助</div>
+        <nav>
+          <a href="#overview">语言概览</a>
+          <a href="#modules">入局与模块</a>
+          <a href="#values">变量与输出</a>
+          <a href="#calc">九章计算</a>
+          <a href="#struct">连山结构</a>
+          <a href="#function">函数</a>
+          <a href="#condition">条件</a>
+          <a href="#block">块语法</a>
+          <a href="#samples">完整示例</a>
+        </nav>
+      </aside>
+      <main>
+        <h1>卦LISP 与 TypeScript 语法对照</h1>
+        <p class="lead">
+          卦LISP 通过“入局”选择当前语义环境，在局中对关键词取象，并编译为 TypeScript。
+        </p>
+
+        <section id="overview">
+          <h2>语言概览</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>卦LISP</th>
+                <th>TypeScript</th>
+                <th>说明</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>入 九章</code></td>
+                <td>启用计算库</td>
+                <td>让 <code>益</code>、<code>损</code>、<code>方田</code> 等词可被取象。</td>
+              </tr>
+              <tr>
+                <td><code>乾 a 10</code></td>
+                <td><code>const a = 10</code></td>
+                <td>不可变声明。</td>
+              </tr>
+              <tr>
+                <td><code>坤 i 0</code></td>
+                <td><code>let i = 0</code></td>
+                <td>可变声明。</td>
+              </tr>
+              <tr>
+                <td><code>大有 "你好"</code></td>
+                <td><code>console.log("你好")</code></td>
+                <td>显出、展示。</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="modules">
+          <h2>入局与模块</h2>
+          <pre><code>入 九章
+入 九章外
+入 连山</code></pre>
+          <p>多个局可以叠加。后入之局优先取象，如果没有对应词，就向前面的局查找。</p>
+          <table>
+            <thead>
+              <tr>
+                <th>模块</th>
+                <th>用途</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>九章</code></td><td>古典数术核心，四则运算、方田、勾股等。</td></tr>
+              <tr><td><code>九章外</code></td><td>现代数学补充，正弦、对数、随机、最大最小等。</td></tr>
+              <tr><td><code>连山</code></td><td>数据结构，列、集、典、栈、队等。</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="values">
+          <h2>变量与输出</h2>
+          <div class="pair">
+            <pre><code>乾 年龄 18
+坤 计数 0
+革 计数 10
+大有 年龄
+大有 "已载入"</code></pre>
+            <pre><code>const 年龄 = 18;
+let 计数 = 0;
+计数 = 10;
+console.log(年龄);
+console.log("已载入");</code></pre>
+          </div>
+        </section>
+
+        <section id="calc">
+          <h2>九章计算</h2>
+          <table>
+            <thead>
+              <tr><th>卦LISP</th><th>TypeScript</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>[益 a b]</code></td><td><code>a + b</code></td></tr>
+              <tr><td><code>[损 a b]</code></td><td><code>a - b</code></td></tr>
+              <tr><td><code>[丰 a b]</code></td><td><code>a * b</code></td></tr>
+              <tr><td><code>[节 a b]</code></td><td><code>a / b</code></td></tr>
+              <tr><td><code>[大过 a b]</code></td><td><code>a &gt; b</code></td></tr>
+              <tr><td><code>[同人 a b]</code></td><td><code>a === b</code></td></tr>
+              <tr><td><code>[勾股 3 4]</code></td><td><code>Math.hypot(3, 4)</code></td></tr>
+              <tr><td><code>[正弦 [节 [圆周率] 2]]</code></td><td><code>Math.sin(Math.PI / 2)</code></td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="struct">
+          <h2>连山结构</h2>
+          <table>
+            <thead>
+              <tr><th>卦LISP</th><th>TypeScript</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>[列 1 2 3]</code></td><td><code>[1, 2, 3]</code></td></tr>
+              <tr><td><code>[集 1 2 2 3]</code></td><td><code>new Set([1, 2, 2, 3])</code></td></tr>
+              <tr><td><code>[典 "名" "张三"]</code></td><td><code>{ 名: "张三" }</code></td></tr>
+              <tr><td><code>[取 xs 0]</code></td><td><code>xs[0]</code></td></tr>
+              <tr><td><code>[接 xs 4]</code></td><td><code>[...xs, 4]</code></td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="function">
+          <h2>函数</h2>
+          <div class="pair">
+            <pre><code>鼎 求和 a b 顶
+  归 [益 a b]
+丁
+
+大有 [应 求和 3 5]</code></pre>
+            <pre><code>function 求和(a, b) {
+  return a + b;
+}
+
+console.log(求和(3, 5));</code></pre>
+          </div>
+        </section>
+
+        <section id="condition">
+          <h2>条件</h2>
+          <div class="pair">
+            <pre><code>观 [大过 年龄 18] 顶
+  大有 "已成年"
+观观 [同人 年龄 18]
+  大有 "刚成年"
+余
+  大有 "未成年"
+坤
+  大有 "观毕"
+丁</code></pre>
+            <pre><code>if (年龄 &gt; 18) {
+  console.log("已成年");
+} else if (年龄 === 18) {
+  console.log("刚成年");
+} else {
+  console.log("未成年");
+}
+console.log("观毕");</code></pre>
+          </div>
+        </section>
+
+        <section id="block">
+          <h2>块语法</h2>
+          <p>卦LISP 不使用 Python 式缩进块。缩进只影响排版，真正的块由 <code>顶</code> 与 <code>丁</code> 显式开合。</p>
+          <div class="note">
+            <strong>鼎、顶、丁：</strong> 鼎是器，顶为开器之上，丁为收器成形。三者同音，便于输入，也更贴合语言气质。
+          </div>
+        </section>
+
+        <section id="samples">
+          <h2>完整示例</h2>
+          <pre><code>入 九章
+入 连山
+
+鼎 三数和 xs 顶
+  归 [益 [取 xs 0] [取 xs 1] [取 xs 2]]
+丁
+
+乾 数列 [列 2 4 6]
+大有 [应 三数和 数列]</code></pre>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

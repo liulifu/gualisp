@@ -50,6 +50,20 @@ select {
   border-bottom: 1px solid #681710;
 }
 
+.help-link {
+  margin-left: auto;
+  color: #fff;
+  text-decoration: none;
+  border: 1px solid rgb(255 255 255 / 45%);
+  border-radius: 3px;
+  padding: 4px 10px;
+  font-size: 13px;
+}
+
+.help-link:hover {
+  background: rgb(255 255 255 / 14%);
+}
+
 .brand {
   font-weight: 700;
   letter-spacing: 0;
@@ -262,6 +276,61 @@ select {
 .stmt:focus {
   box-shadow: inset 0 0 0 2px var(--focus);
   background: #fbfdff;
+}
+
+.stmt .kw-module,
+.stmt .kw-module-name {
+  color: #8a1f17;
+  font-weight: 700;
+}
+
+.stmt .kw-declare {
+  color: #7a4b00;
+  font-weight: 700;
+}
+
+.stmt .kw-output {
+  color: #0b8043;
+  font-weight: 700;
+}
+
+.stmt .kw-fn,
+.stmt .kw-block {
+  color: #6f42c1;
+  font-weight: 700;
+}
+
+.stmt .kw-cond {
+  color: #0057b8;
+  font-weight: 700;
+}
+
+.stmt .kw-calc {
+  color: #b3261e;
+  font-weight: 700;
+}
+
+.stmt .kw-modern {
+  color: #006c67;
+  font-weight: 700;
+}
+
+.stmt .kw-struct {
+  color: #5c3b00;
+  font-weight: 700;
+}
+
+.stmt .kw-string {
+  color: #0b6b2b;
+}
+
+.stmt .kw-number {
+  color: #174ea6;
+}
+
+.stmt .kw-comment {
+  color: #6a737d;
+  font-style: italic;
 }
 
 .row-tools {

@@ -1,5 +1,6 @@
 // src/app.ts
 var samples = {
+  空白: "",
   九章: `入 九章
 
 乾 a 10
@@ -170,8 +171,76 @@ var ribbon = {
     }
   ]
 };
-var rows = samples.鼎观.split(`
-`);
+var highlightClasses = {
+  入: "kw-module",
+  出: "kw-module",
+  九章: "kw-module-name",
+  九章外: "kw-module-name",
+  连山: "kw-module-name",
+  乾: "kw-declare",
+  坤: "kw-declare",
+  革: "kw-declare",
+  大有: "kw-output",
+  鼎: "kw-fn",
+  顶: "kw-block",
+  丁: "kw-block",
+  归: "kw-fn",
+  应: "kw-fn",
+  观: "kw-cond",
+  观观: "kw-cond",
+  余: "kw-cond",
+  益: "kw-calc",
+  损: "kw-calc",
+  丰: "kw-calc",
+  节: "kw-calc",
+  剥: "kw-calc",
+  升: "kw-calc",
+  同人: "kw-calc",
+  睽: "kw-calc",
+  大过: "kw-calc",
+  小过: "kw-calc",
+  大畜: "kw-calc",
+  小畜: "kw-calc",
+  方田: "kw-calc",
+  粟米: "kw-calc",
+  衰分: "kw-calc",
+  少广: "kw-calc",
+  商功: "kw-calc",
+  均输: "kw-calc",
+  盈不足: "kw-calc",
+  方程: "kw-calc",
+  勾股: "kw-calc",
+  圆周率: "kw-modern",
+  自然常: "kw-modern",
+  正弦: "kw-modern",
+  余弦: "kw-modern",
+  正切: "kw-modern",
+  对数: "kw-modern",
+  最大: "kw-modern",
+  最小: "kw-modern",
+  随机: "kw-modern",
+  列: "kw-struct",
+  集: "kw-struct",
+  典: "kw-struct",
+  栈: "kw-struct",
+  队: "kw-struct",
+  长: "kw-struct",
+  首: "kw-struct",
+  尾: "kw-struct",
+  取: "kw-struct",
+  置: "kw-struct",
+  接: "kw-struct",
+  并: "kw-struct",
+  含: "kw-struct",
+  键: "kw-struct",
+  值: "kw-struct",
+  入集: "kw-struct",
+  出集: "kw-struct",
+  并集: "kw-struct",
+  交集: "kw-struct",
+  差集: "kw-struct"
+};
+var rows = [""];
 var activeRow = 0;
 var activeTab = "常用";
 var app = document.querySelector("#app");
@@ -193,12 +262,30 @@ function marker(line) {
     return "注";
   return "句";
 }
+function highlightLine(line) {
+  if (line.trimStart().startsWith(";"))
+    return `<span class="kw-comment">${htmlEscape(line)}</span>`;
+  const tokenPattern = /(\"(?:\\.|[^"\\])*\"|'(?:\\.|[^'\\])*'|[A-Za-z_\u4e00-\u9fa5][A-Za-z0-9_\u4e00-\u9fa5]*|-?\d+(?:\.\d+)?|\s+|.)/gu;
+  return Array.from(line.matchAll(tokenPattern)).map(([token]) => {
+    if (/^\s+$/.test(token))
+      return token.replaceAll(" ", "&nbsp;");
+    if (/^["']/.test(token))
+      return `<span class="kw-string">${htmlEscape(token)}</span>`;
+    if (/^-?\d/.test(token))
+      return `<span class="kw-number">${htmlEscape(token)}</span>`;
+    const klass = highlightClasses[token];
+    if (klass)
+      return `<span class="${klass}">${htmlEscape(token)}</span>`;
+    return htmlEscape(token);
+  }).join("");
+}
 function render() {
   app.innerHTML = `
     <div class="shell">
       <header class="topbar">
         <div class="brand">卦LISP 编辑器</div>
         <div class="status">表格式编辑 · 点击工具栏插入关键词 · 编译到 TypeScript</div>
+        <a class="help-link" href="/help.html" target="_blank" rel="noreferrer">帮助</a>
       </header>
       <section class="ribbon">
         <div class="tabs">
@@ -221,7 +308,7 @@ function render() {
             <div class="pane-title">卦式表格</div>
             <div class="pane-actions">
               <select class="sample-select" id="sample">
-                ${Object.keys(samples).map((name) => `<option value="${name}">${name}示例</option>`).join("")}
+                ${Object.keys(samples).map((name) => `<option value="${name}">${name === "空白" ? "空白页" : `${name}示例`}</option>`).join("")}
               </select>
               <button class="cmd-btn" id="loadSample">载入</button>
               <button class="cmd-btn" id="addRow">添行</button>
@@ -244,7 +331,7 @@ function render() {
                       <tr>
                         <td class="line-no">${index + 1}</td>
                         <td class="mark-cell">${marker(line)}</td>
-                        <td><div class="stmt" contenteditable="true" spellcheck="false" data-row="${index}">${htmlEscape(line)}</div></td>
+                        <td><div class="stmt" contenteditable="true" spellcheck="false" data-row="${index}">${highlightLine(line)}</div></td>
                         <td><div class="row-tools"><button class="row-btn" data-add-after="${index}">+</button><button class="row-btn" data-del="${index}">-</button></div></td>
                       </tr>
                     `).join("")}
@@ -283,9 +370,18 @@ function bind() {
   document.querySelectorAll(".stmt").forEach((cell) => {
     cell.addEventListener("focus", () => {
       activeRow = Number(cell.dataset.row);
+      cell.textContent = rows[activeRow] ?? "";
+      cell.classList.add("editing");
     });
     cell.addEventListener("input", () => {
       rows[Number(cell.dataset.row)] = cell.textContent ?? "";
+      updateMarkers();
+    });
+    cell.addEventListener("blur", () => {
+      const row = Number(cell.dataset.row);
+      rows[row] = cell.textContent ?? "";
+      cell.classList.remove("editing");
+      cell.innerHTML = highlightLine(rows[row] ?? "");
       updateMarkers();
     });
   });
