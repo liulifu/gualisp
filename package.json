@@ -10,6 +10,8 @@
     "build:example": "bun ./bin/gua.mjs build examples/jiuzhang.gua -o dist/jiuzhang.ts",
     "run:example": "bun dist/jiuzhang.ts",
     "build:lianshan": "bun ./bin/gua.mjs build examples/lianshan.gua -o dist/lianshan.ts",
-    "run:lianshan": "bun dist/lianshan.ts"
+    "run:lianshan": "bun dist/lianshan.ts",
+    "build:kuaiji": "bun ./bin/gua.mjs build examples/kuaiji.gua -o dist/kuaiji.ts",
+    "run:kuaiji": "bun dist/kuaiji.ts"
   }
 }

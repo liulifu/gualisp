@@ -15,6 +15,14 @@ const registry = {
     节: { kind: "infix", op: "/", min: 2 },
     剥: { kind: "infix", op: "%", min: 2 },
     升: { kind: "infix", op: "**", min: 2 },
+    同人: { kind: "infix", op: "===", min: 2 },
+    睽: { kind: "infix", op: "!==", min: 2 },
+    大过: { kind: "infix", op: ">", min: 2 },
+    小过: { kind: "infix", op: "<", min: 2 },
+    大畜: { kind: "infix", op: ">=", min: 2 },
+    小畜: { kind: "infix", op: "<=", min: 2 },
+    比: { kind: "infix", op: "&&", min: 2 },
+    否: { kind: "prefix", op: "!", min: 1 },
     方田: { kind: "call", fn: "__九章方田", min: 2 },
     粟米: { kind: "call", fn: "__九章粟米", min: 3 },
     衰分: { kind: "call", fn: "__九章衰分", min: 2 },
@@ -417,6 +425,12 @@ function compileCall(parts, state) {
     return `[${args.map((arg) => compileExpr(arg, state)).join(", ")}]`;
   }
 
+  if (op === "应") {
+    if (args.length < 1 || Array.isArray(args[0])) throw new Error("应 需要函数名");
+    const [fn, ...callArgs] = args;
+    return `${fn}(${callArgs.map((arg) => compileExpr(arg, state)).join(", ")})`;
+  }
+
   const resolved = resolveMeaning(op, state);
   const meaning = resolved?.meaning;
   if (!meaning) throw new Error(`在 ${state.context || "无局"} 中不能取象: ${op}`);
@@ -430,6 +444,11 @@ function compileCall(parts, state) {
       .map((arg) => compileExpr(arg, state))
       .join(` ${meaning.op} `)
       .replace(/^(.+)$/, "($1)");
+  }
+
+  if (meaning.kind === "prefix") {
+    if (args.length !== 1) throw new Error(`${op} 只接受一个参数`);
+    return `(${meaning.op}${compileExpr(args[0], state)})`;
   }
 
   if (meaning.kind === "call") {
@@ -453,10 +472,18 @@ function compileExpr(expr, state) {
   return compileAtom(expr);
 }
 
-function compileLine(parts, state) {
+function stripTop(parts) {
+  return parts.at(-1) === "顶" ? parts.slice(0, -1) : parts;
+}
+
+function compileSimpleLine(parts, state) {
   const [head, ...rest] = parts;
 
   if (!head) return null;
+
+  if (["丁", "观观", "余", "坤"].includes(head)) {
+    throw new Error(`${head} 不能出现在这里`);
+  }
 
   if (head === "入" || head === "姤") {
     if (rest.length !== 1 || Array.isArray(rest[0])) {
@@ -477,6 +504,13 @@ function compileLine(parts, state) {
       return name;
     });
     return `export { ${names.join(", ")} };`;
+  }
+
+  if (head === "归") {
+    if (rest.length < 1) throw new Error("归 需要一个返回值");
+    const value =
+      rest.length === 1 ? compileExpr(rest[0], state) : compileCall(rest, state);
+    return `return ${value};`;
   }
 
   if (declarations.has(head)) {
@@ -508,6 +542,129 @@ function compileLine(parts, state) {
   return head === "大有" ? `${compiled};` : `console.log(${compiled});`;
 }
 
+function compileFunction(parts, lines, state, index) {
+  const clean = stripTop(parts);
+  const [, name, ...params] = clean;
+  if (!name || Array.isArray(name)) throw new Error("鼎 需要函数名");
+  if (parts.at(-1) !== "顶") throw new Error("鼎 需要以 顶 开器");
+  if (params.some(Array.isArray)) throw new Error("鼎 的参数必须是名称");
+
+  const body = compileStatements(lines, state, index + 1, new Set(["丁"]));
+  if (body.terminator !== "丁") throw new Error("鼎 缺少 丁");
+  return {
+    code: [`function ${name}(${params.join(", ")}) {`, ...body.code.map((line) => `  ${line}`), "}"],
+    next: body.next + 1,
+  };
+}
+
+function conditionCode(parts, state, keyword) {
+  const clean = stripTop(parts);
+  const [, ...conditionParts] = clean;
+  if (conditionParts.length < 1) throw new Error(`${keyword} 需要条件`);
+  return conditionParts.length === 1
+    ? compileExpr(conditionParts[0], state)
+    : compileCall(conditionParts, state);
+}
+
+function compileCondition(parts, lines, state, index) {
+  if (parts.at(-1) !== "顶") throw new Error("观 需要以 顶 开局");
+
+  const branches = [];
+  let finalBody = [];
+  let cursor = index;
+  const firstCondition = conditionCode(parts, state, "观");
+  let body = compileStatements(lines, state, cursor + 1, new Set(["观观", "余", "坤", "丁"]));
+  branches.push({ type: "if", condition: firstCondition, code: body.code });
+  cursor = body.next;
+
+  while (cursor < lines.length && lines[cursor].parts[0] === "观观") {
+    const branchParts = lines[cursor].parts;
+    const condition = conditionCode(branchParts, state, "观观");
+    body = compileStatements(lines, state, cursor + 1, new Set(["观观", "余", "坤", "丁"]));
+    branches.push({ type: "else-if", condition, code: body.code });
+    cursor = body.next;
+  }
+
+  if (cursor < lines.length && lines[cursor].parts[0] === "余") {
+    if (stripTop(lines[cursor].parts).length !== 1) throw new Error("余 不接受参数");
+    body = compileStatements(lines, state, cursor + 1, new Set(["坤", "丁"]));
+    branches.push({ type: "else", code: body.code });
+    cursor = body.next;
+  }
+
+  if (cursor < lines.length && lines[cursor].parts[0] === "坤") {
+    if (stripTop(lines[cursor].parts).length !== 1) throw new Error("坤 不接受参数");
+    body = compileStatements(lines, state, cursor + 1, new Set(["丁"]));
+    finalBody = body.code;
+    cursor = body.next;
+  }
+
+  if (cursor >= lines.length || lines[cursor].parts[0] !== "丁") throw new Error("观 缺少 丁");
+
+  const code = [];
+  branches.forEach((branch, branchIndex) => {
+    const prefix =
+      branch.type === "if"
+        ? `if (${branch.condition}) {`
+        : branch.type === "else-if"
+          ? `} else if (${branch.condition}) {`
+          : "} else {";
+    code.push(prefix);
+    code.push(...branch.code.map((line) => `  ${line}`));
+    if (branchIndex === branches.length - 1) code.push("}");
+  });
+  code.push(...finalBody);
+  return { code, next: cursor + 1 };
+}
+
+function compileStatements(lines, state, start, terminators) {
+  const code = [];
+  let index = start;
+
+  while (index < lines.length) {
+    const { parts, lineNumber } = lines[index];
+    const head = parts[0];
+    if (terminators.has(head)) return { code, next: index, terminator: head };
+
+    try {
+      if (head === "鼎") {
+        const compiled = compileFunction(parts, lines, state, index);
+        code.push(...compiled.code);
+        index = compiled.next;
+        continue;
+      }
+
+      if (head === "观") {
+        const compiled = compileCondition(parts, lines, state, index);
+        code.push(...compiled.code);
+        index = compiled.next;
+        continue;
+      }
+
+      const compiled = compileSimpleLine(parts, state);
+      if (compiled) code.push(compiled);
+      index += 1;
+    } catch (error) {
+      throw new Error(`第 ${lineNumber} 行: ${error.message}`);
+    }
+  }
+
+  return { code, next: index, terminator: null };
+}
+
+function sourceLines(source) {
+  const lines = [];
+  source.split(/\r?\n/).forEach((rawLine, index) => {
+    const line = stripComment(rawLine).trim();
+    if (!line) return;
+    lines.push({
+      lineNumber: index + 1,
+      parts: parseTokens(tokenize(line)),
+    });
+  });
+  return lines;
+}
+
 export function compile(source) {
   const state = { context: null, contexts: [], modules: new Set() };
   const out = [
@@ -516,19 +673,8 @@ export function compile(source) {
     "",
   ];
 
-  const lines = source.split(/\r?\n/);
-  lines.forEach((rawLine, index) => {
-    const line = stripComment(rawLine).trim();
-    if (!line) return;
-
-    try {
-      const parts = parseTokens(tokenize(line));
-      const compiled = compileLine(parts, state);
-      if (compiled) out.push(compiled);
-    } catch (error) {
-      throw new Error(`第 ${index + 1} 行: ${error.message}`);
-    }
-  });
+  const compiled = compileStatements(sourceLines(source), state, 0, new Set());
+  out.push(...compiled.code);
 
   const preamble = Array.from(state.modules)
     .map((moduleName) => modulePreambles[moduleName])
