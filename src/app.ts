@@ -282,7 +282,7 @@ function marker(line: string) {
 
 function highlightLine(line: string) {
   if (line.trimStart().startsWith(";")) return `<span class="kw-comment">${htmlEscape(line)}</span>`;
-  const tokenPattern = /(\"(?:\\.|[^"\\])*\"|'(?:\\.|[^'\\])*'|[A-Za-z_\u4e00-\u9fa5][A-Za-z0-9_\u4e00-\u9fa5]*|-?\d+(?:\.\d+)?|\s+|.)/gu;
+  const tokenPattern = /("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|[A-Za-z_\u4e00-\u9fa5][A-Za-z0-9_\u4e00-\u9fa5]*|-?\d+(?:\.\d+)?|\s+|.)/gu;
   return Array.from(line.matchAll(tokenPattern))
     .map(([token]) => {
       if (/^\s+$/.test(token)) return token.replaceAll(" ", "&nbsp;");

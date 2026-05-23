@@ -36,7 +36,10 @@ async function staticFile(pathname: string) {
   const file = Bun.file(fullPath);
   if (!(await file.exists())) return null;
   return new Response(file, {
-    headers: { "Content-Type": types[extname(fullPath)] ?? "application/octet-stream" },
+    headers: {
+      "Content-Type": types[extname(fullPath)] ?? "application/octet-stream",
+      "Cache-Control": "no-store",
+    },
   });
 }
 
