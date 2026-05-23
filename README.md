@@ -4,6 +4,8 @@
 
 当前 MVP 支持将 `.gua` 源码编译成 TypeScript，并通过 Bun 运行。
 
+![卦LISP Web 编辑器](docs/gualisp-editor.png)
+
 ## 编译示例
 
 ```bash
@@ -61,5 +63,13 @@ http://localhost:4173
 - 语句关键字高亮
 - 顶部 Ribbon 关键词插入
 - 右上角帮助页，提供卦LISP 与 TypeScript 语法对照
+
+## 更新截图
+
+启动 Web 编辑器后，可用 Chrome headless 更新 README 截图：
+
+```bash
+"C:\Program Files\Google\Chrome\Application\chrome.exe" --headless=new --disable-gpu --hide-scrollbars --window-size=1429,880 --virtual-time-budget=4000 --screenshot="docs\gualisp-editor.png" "http://localhost:4173/?sample=%E4%B9%9D%E7%AB%A0&tab=%E8%BF%9E%E5%B1%B1&run=1"
+```
 
 详细设定见 [about.md](about.md)。

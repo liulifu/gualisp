@@ -243,6 +243,18 @@ var highlightClasses = {
 var rows = [""];
 var activeRow = 0;
 var activeTab = "常用";
+var shouldAutoRun = false;
+function initFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const sample = params.get("sample");
+  const tab = params.get("tab");
+  if (sample && sample in samples)
+    rows = samples[sample].split(`
+`);
+  if (tab && tab in ribbon)
+    activeTab = tab;
+  shouldAutoRun = params.get("run") === "1";
+}
 var app = document.querySelector("#app");
 if (!app)
   throw new Error("缺少 #app");
@@ -489,4 +501,10 @@ async function runSource() {
     setMessage("运行失败", false);
   }
 }
+initFromUrl();
 render();
+if (shouldAutoRun) {
+  setTimeout(() => {
+    runSource();
+  }, 100);
+}

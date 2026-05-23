@@ -258,6 +258,16 @@ const highlightClasses: Record<string, string> = {
 let rows = [""];
 let activeRow = 0;
 let activeTab: TabName = "常用";
+let shouldAutoRun = false;
+
+function initFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const sample = params.get("sample") as SampleName | null;
+  const tab = params.get("tab") as TabName | null;
+  if (sample && sample in samples) rows = samples[sample].split("\n");
+  if (tab && tab in ribbon) activeTab = tab;
+  shouldAutoRun = params.get("run") === "1";
+}
 
 const app = document.querySelector<HTMLDivElement>("#app");
 if (!app) throw new Error("缺少 #app");
@@ -531,4 +541,10 @@ async function runSource() {
   }
 }
 
+initFromUrl();
 render();
+if (shouldAutoRun) {
+  setTimeout(() => {
+    void runSource();
+  }, 100);
+}
