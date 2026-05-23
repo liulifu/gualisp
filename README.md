@@ -24,6 +24,16 @@ bun dist/lianshan.ts
 - `九章外`：现代计算补充
 - `连山`：数据结构
 
+## License
+
+This project is source-available under the PolyForm Strict License 1.0.0.
+
+- Personal, research, experiment, study, and other noncommercial use is permitted.
+- Commercial use is not permitted.
+- Distribution, sublicensing, and modified derivative distribution are not permitted under this license.
+
+See [LICENSE](LICENSE) for details.
+
 ## Web 编辑器
 
 ```bash

@@ -1,6 +1,7 @@
 {
   "name": "gualisp",
   "private": true,
+  "license": "PolyForm-Strict-1.0.0",
   "type": "module",
   "bin": {
     "gua": "./bin/gua.mjs"
